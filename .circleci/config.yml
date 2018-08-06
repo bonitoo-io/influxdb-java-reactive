@@ -1,0 +1,127 @@
+#
+# The MIT License
+# Copyright © 2018
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+
+version: 2
+
+cache-key: &cache-key v1-dependencies-{{ checksum "pom.xml" }}
+maven-opts: &maven-opts -Xmx3200m
+
+jdk-lts: &jdk-lts maven:3-jdk-8-slim
+influxdb-last-version: &influxdb-last-version influxdb:1.6-alpine
+
+shared: &shared
+  working_directory: ~/repo
+
+  environment:
+    MAVEN_OPTS: *maven-opts
+
+  steps:
+  - checkout
+  - restore_cache:
+      keys:
+      - *cache-key
+  - run:
+      name: Resolve dependencies
+      command: mvn dependency:resolve-plugins dependency:go-offline -U
+  - run:
+      name: Test
+      command: mvn clean install -U
+  - save_cache:
+      paths:
+      - ~/.m2
+      key: *cache-key
+
+jobs:
+
+  jdk10_influxDB1.6:
+    <<: *shared
+    docker:
+    - image: maven:3-jdk-10-slim
+    - image: influxdb:1.6-alpine
+
+  jdk10_influxDB1.5:
+    <<: *shared
+    docker:
+    - image: maven:3-jdk-10-slim
+    - image: influxdb:1.6-alpine
+
+  code_coverage:
+    docker:
+    - image: *jdk-lts
+    - image: *influxdb-last-version
+
+    working_directory: ~/repo
+
+    environment:
+      MAVEN_OPTS: *maven-opts
+
+    steps:
+    - checkout
+
+    - restore_cache:
+        keys:
+        - *cache-key
+
+    - run:
+        name: Create Code Coverage test report
+        command: mvn clean install -U
+
+    - run:
+        name: Report Code Coverage to CodeCov
+        command: bash <(curl -s https://codecov.io/bash)
+
+  deploy:
+    docker:
+    - image: *jdk-lts
+    - image: *influxdb-last-version
+
+    working_directory: ~/repo
+
+    environment:
+      MAVEN_OPTS: *maven-opts
+
+    steps:
+    - checkout
+
+    - restore_cache:
+        keys:
+        - *cache-key
+
+    - run:
+        name: Build & Deploy
+        command: mvn clean deploy -s config/deploy-settings.xml -U
+
+workflows:
+  version: 2
+  build:
+    jobs:
+    - jdk10_influxDB1.6
+    - jdk10_influxDB1.5
+    - code_coverage:
+        requires:
+          - jdk10_influxDB1.6
+          - jdk10_influxDB1.5
+    - deploy:
+        requires:
+          - jdk10_influxDB1.6
+          - jdk10_influxDB1.5
