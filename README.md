@@ -1,4 +1,4 @@
-#influxdb-java-reactive
+# influxdb-java-reactive
 
 [![Build Status](https://img.shields.io/circleci/project/github/bonitoo-io/influxdb-java-reactive/master.svg)](https://circleci.com/gh/bonitoo-io/workflows/influxdb-java-reactive/tree/master)
 [![codecov](https://codecov.io/gh/bonitoo-io/influxdb-java-reactive/branch/master/graph/badge.svg)](https://codecov.io/gh/bonitoo-io/influxdb-java-reactive)
