@@ -44,7 +44,7 @@ shared: &shared
       keys:
       - *cache-key
   - run: pwd
-  - run: ln -s
+  - run: ls -l
   - run:
       name: Resolve dependencies
       command: mvn dependency:resolve-plugins dependency:go-offline -U
