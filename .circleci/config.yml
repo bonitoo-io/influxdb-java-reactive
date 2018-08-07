@@ -30,6 +30,7 @@ jdk-lts: &jdk-lts maven:3-jdk-8-slim
 jdk-build: &jdk-build maven:3-jdk-10-slim
 
 influxdb-last-version: &influxdb-last-version influxdb:1.6-alpine
+influxdb-command: &influxdb-command -config config/influxdb.conf
 
 shared: &shared
   working_directory: ~/repo
@@ -60,47 +61,55 @@ jobs:
     docker:
     - image: *jdk-lts
     - image: *influxdb-last-version
+      command: *influxdb-command
 
   Influx_DB1.6:
     <<: *shared
     docker:
     - image: *jdk-build
     - image: influxdb:1.6-alpine
+      command: *influxdb-command
 
   Influx_DB1.5:
     <<: *shared
     docker:
     - image: *jdk-build
     - image: influxdb:1.5-alpine
+      command: *influxdb-command
 
   Influx_DB1.4:
     <<: *shared
     docker:
     - image: *jdk-build
     - image: influxdb:1.4-alpine
+      command: *influxdb-command
 
   Influx_DB1.3:
     <<: *shared
     docker:
     - image: *jdk-build
     - image: influxdb:1.3-alpine
+      command: *influxdb-command
 
   Influx_DB1.2:
     <<: *shared
     docker:
     - image: *jdk-build
     - image: influxdb:1.2-alpine
+      command: *influxdb-command
 
   Influx_DB1.1:
     <<: *shared
     docker:
     - image: *jdk-build
     - image: influxdb:1.1-alpine
+      command: *influxdb-command
 
   code_coverage:
     docker:
     - image: *jdk-lts
     - image: *influxdb-last-version
+      command: *influxdb-command
 
     working_directory: ~/repo
 
@@ -165,10 +174,4 @@ workflows:
           - Influx_DB1.1
     - deploy:
         requires:
-          - JDK_LTS
-          - Influx_DB1.6
-          - Influx_DB1.5
-          - Influx_DB1.4
-          - Influx_DB1.3
-          - Influx_DB1.2
-          - Influx_DB1.1
+          - code_coverage

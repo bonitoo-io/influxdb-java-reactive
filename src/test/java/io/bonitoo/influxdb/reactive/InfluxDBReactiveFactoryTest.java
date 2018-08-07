@@ -59,4 +59,18 @@ class InfluxDBReactiveFactoryTest {
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("BatchOptionsReactive is required");
     }
+
+    @Test
+    void success() {
+
+        InfluxDBOptions options = InfluxDBOptions.builder()
+                .url("http://172.17.0.2:8086")
+                .username("root")
+                .password("root")
+                .database("reactive_measurements")
+                .build();
+
+        InfluxDBReactive influxDBReactive = InfluxDBReactiveFactory.connect(options);
+        Assertions.assertThat(influxDBReactive).isNotNull();
+    }
 }
