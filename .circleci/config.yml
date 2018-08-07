@@ -23,7 +23,7 @@
 
 version: 2
 
-cache-key: &cache-key v1-dependencies-{{ checksum "pom.xml" }}
+cache-key: &cache-key v2-dependencies-{{ checksum "pom.xml" }}
 maven-opts: &maven-opts -Xmx3200m
 
 jdk-lts: &jdk-lts maven:3-jdk-8-slim
