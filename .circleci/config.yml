@@ -30,7 +30,7 @@ jdk-lts: &jdk-lts maven:3-jdk-8-slim
 jdk-build: &jdk-build maven:3-jdk-10-slim
 
 influxdb-last-version: &influxdb-last-version influxdb:1.6-alpine
-influxdb-command: &influxdb-command -config ${PWD}/config/influxdb.conf
+influxdb-command: &influxdb-command -config ~/repo/config/influxdb.conf
 
 shared: &shared
   working_directory: ~/repo
