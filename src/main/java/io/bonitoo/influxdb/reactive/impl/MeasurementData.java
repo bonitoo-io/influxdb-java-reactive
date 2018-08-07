@@ -30,8 +30,10 @@ import java.util.logging.Logger;
 import javax.annotation.Nonnull;
 
 import io.bonitoo.influxdb.reactive.options.WriteOptions;
+
 import org.influxdb.InfluxDBMapperException;
 import org.influxdb.annotation.Column;
+import org.influxdb.annotation.Measurement;
 import org.influxdb.dto.Point;
 import org.influxdb.impl.InfluxDBResultMapper;
 
@@ -92,6 +94,11 @@ final class MeasurementData<M> extends AbstractData<M> {
             Class<?> measurementType = measurement.getClass();
             cacheMeasurementClass(measurementType);
 
+            if (measurementType.getAnnotation(Measurement.class) == null) {
+                String message = String
+                        .format("Measurement type '%s' does not have a @Measurement annotation.", measurementType);
+                throw new InfluxDBMapperException(message);
+            }
             Point.Builder builder = Point.measurement(getMeasurementName(measurementType));
 
             getColNameAndFieldMap(measurementType).forEach((name, field) -> {

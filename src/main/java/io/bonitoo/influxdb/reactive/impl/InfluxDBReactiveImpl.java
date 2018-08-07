@@ -50,6 +50,7 @@ import io.bonitoo.influxdb.reactive.options.BatchOptionsReactive;
 import io.bonitoo.influxdb.reactive.options.InfluxDBOptions;
 import io.bonitoo.influxdb.reactive.options.QueryOptions;
 import io.bonitoo.influxdb.reactive.options.WriteOptions;
+
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -167,7 +168,6 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
                 .doOnError(throwable -> publish(new UnhandledErrorEvent(throwable)))
                 .subscribe(new WritePointsConsumer(retryScheduler));
     }
-
 
     @Override
     protected void configureRetrofit(@Nonnull final Retrofit.Builder retrofitBuilder) {
@@ -814,7 +814,7 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
                 //
                 while (!subscriber.isDisposed() && !source.exhausted()) {
 
-                    chunkProccesor.process(body, queryResult -> {
+                    chunkProccesor.process(source, queryResult -> {
                         if (queryResult != null) {
 
                             subscriber.onNext(queryResult);

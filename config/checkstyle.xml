@@ -85,7 +85,7 @@
             <property name="processJavadoc" value="true"/>
         </module>
         <module name="CustomImportOrder">
-            <property name="specialImportsRegExp" value="io.bonitoo.flux"/>
+            <property name="specialImportsRegExp" value="io.bonitoo.influxdb.reactive"/>
             <property name="sortImportsInGroupAlphabetically" value="true"/>
             <property name="customImportOrderRules"
                       value="STANDARD_JAVA_PACKAGE###SPECIAL_IMPORTS###THIRD_PARTY_PACKAGE###STATIC"/>

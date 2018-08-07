@@ -20,35 +20,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.bonitoo.influxdb.reactive.impl;
+package io.bonitoo.influxdb.reactive.options;
 
-import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
 
-import io.bonitoo.influxdb.reactive.options.WriteOptions;
-
-import org.influxdb.dto.Point;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
 
 /**
- * @author Jakub Bednar (bednar@github) (18/06/2018 14:57)
+ * @author Jakub Bednar (bednar@github) (11/06/2018 14:13)
  */
-final class PointData extends AbstractData<Point> {
+@RunWith(JUnitPlatform.class)
+class QueryOptionsTest {
 
-    private Point point;
+    @Test
+    void defaults() {
+        QueryOptions queryOptions = QueryOptions.builder().build();
 
-    PointData(@Nonnull final Point point, @Nonnull final WriteOptions writeOptions) {
-        super(writeOptions);
-        this.point = point;
+        Assertions.assertThat(queryOptions.getChunkSize()).isEqualTo(10_000);
+        Assertions.assertThat(queryOptions.getPrecision()).isEqualTo(TimeUnit.NANOSECONDS);
     }
 
-    @Nonnull
-    @Override
-    Point getData() {
-        return point;
-    }
+    @Test
+    void chunkSizePositive() {
 
-    @Nonnull
-    @Override
-    String lineProtocol() {
-        return point.lineProtocol(writeOptions.getPrecision());
+        QueryOptions.Builder queryOptions = QueryOptions.builder();
+
+        Assertions.assertThatThrownBy(() -> queryOptions.chunkSize(-1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Expecting a positive number for chunkSize");
     }
 }

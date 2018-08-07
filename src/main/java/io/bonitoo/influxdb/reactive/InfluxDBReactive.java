@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
 import io.bonitoo.influxdb.reactive.events.AbstractInfluxEvent;
 import io.bonitoo.influxdb.reactive.options.QueryOptions;
 import io.bonitoo.influxdb.reactive.options.WriteOptions;
+
 import io.reactivex.Flowable;
 import io.reactivex.Maybe;
 import io.reactivex.Observable;

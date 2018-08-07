@@ -20,35 +20,27 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.bonitoo.influxdb.reactive.impl;
+package io.bonitoo.influxdb.reactive.options;
 
-import javax.annotation.Nonnull;
-
-import io.bonitoo.influxdb.reactive.options.WriteOptions;
-
-import org.influxdb.dto.Point;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.platform.runner.JUnitPlatform;
+import org.junit.runner.RunWith;
 
 /**
- * @author Jakub Bednar (bednar@github) (18/06/2018 14:57)
+ * @author Jakub Bednar (bednar@github) (05/06/2018 09:09)
  */
-final class PointData extends AbstractData<Point> {
+@RunWith(JUnitPlatform.class)
+class BatchOptionsReactiveTest {
 
-    private Point point;
+    @Test
+    void defaults() {
 
-    PointData(@Nonnull final Point point, @Nonnull final WriteOptions writeOptions) {
-        super(writeOptions);
-        this.point = point;
-    }
+        BatchOptionsReactive batchOptions = BatchOptionsReactive.builder().build();
 
-    @Nonnull
-    @Override
-    Point getData() {
-        return point;
-    }
-
-    @Nonnull
-    @Override
-    String lineProtocol() {
-        return point.lineProtocol(writeOptions.getPrecision());
+        Assertions.assertThat(batchOptions.getBatchSize()).isEqualTo(1000);
+        Assertions.assertThat(batchOptions.getBufferLimit()).isEqualTo(10000);
+        Assertions.assertThat(batchOptions.getFlushInterval()).isEqualTo(1000);
+        Assertions.assertThat(batchOptions.getJitterInterval()).isEqualTo(0);
     }
 }
