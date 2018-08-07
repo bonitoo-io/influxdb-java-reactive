@@ -372,7 +372,7 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
         Objects.requireNonNull(query, "Query is required");
         Objects.requireNonNull(measurementType, "Measurement type is required");
 
-        return query(query, measurementType, defaultQueryOptions);
+        return query(Flowable.just(query), measurementType);
     }
 
     @Override
@@ -415,7 +415,7 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
 
         Objects.requireNonNull(query, "Query is required");
 
-        return query(query, defaultQueryOptions);
+        return query(Flowable.just(query));
     }
 
     @Override
