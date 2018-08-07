@@ -43,6 +43,8 @@ shared: &shared
   - restore_cache:
       keys:
       - *cache-key
+  - run: pwd
+  - run: ln -s
   - run:
       name: Resolve dependencies
       command: mvn dependency:resolve-plugins dependency:go-offline -U
