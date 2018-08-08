@@ -33,7 +33,7 @@ import io.bonitoo.influxdb.reactive.options.InfluxDBOptions;
  * The Factory that create a reactive instance of a InfluxDB client.
  *
  * @author Jakub Bednar (bednar@github) (12/06/2018 10:32)
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class InfluxDBReactiveFactory {
 

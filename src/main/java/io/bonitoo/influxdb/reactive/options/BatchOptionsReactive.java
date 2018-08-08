@@ -42,7 +42,7 @@ import static org.influxdb.BatchOptions.DEFAULT_JITTER_INTERVAL_DURATION;
  * BatchOptions are used to configure batching of individual data point writes into InfluxDB.
  *
  * @author Jakub Bednar (bednar@github) (04/06/2018 14:09)
- * @since 3.0.0
+ * @since 1.0.0
  */
 @ThreadSafe
 public final class BatchOptionsReactive {
@@ -68,7 +68,7 @@ public final class BatchOptionsReactive {
     /**
      * @return the number of data point to collect in batch
      * @see BatchOptionsReactive.Builder#batchSize(int)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     public int getBatchSize() {
         return batchSize;
@@ -77,7 +77,7 @@ public final class BatchOptionsReactive {
     /**
      * @return the time to wait at most (milliseconds)
      * @see BatchOptionsReactive.Builder#flushInterval(int) (int)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     public int getFlushInterval() {
         return flushInterval;
@@ -86,7 +86,7 @@ public final class BatchOptionsReactive {
     /**
      * @return batch flush interval jitter value (milliseconds)
      * @see BatchOptionsReactive.Builder#jitterInterval(int)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     public int getJitterInterval() {
         return jitterInterval;
@@ -96,7 +96,7 @@ public final class BatchOptionsReactive {
     /**
      * @return the time to wait before retry unsuccessful write (milliseconds)
      * @see BatchOptionsReactive.Builder#retryInterval(int)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     public int getRetryInterval() {
         return retryInterval;
@@ -105,7 +105,7 @@ public final class BatchOptionsReactive {
     /**
      * @return Maximum number of points stored in the retry buffer.
      * @see BatchOptionsReactive.Builder#bufferLimit(int)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     public int getBufferLimit() {
         return bufferLimit;
@@ -123,7 +123,7 @@ public final class BatchOptionsReactive {
     /**
      * @return the strategy to deal with buffer overflow when using onBackpressureBuffer
      * @see BatchOptionsReactive.Builder#backpressureStrategy(BackpressureOverflowStrategy)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public BackpressureOverflowStrategy getBackpressureStrategy() {
@@ -147,7 +147,7 @@ public final class BatchOptionsReactive {
      * Creates a builder instance.
      *
      * @return a builder
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public static BatchOptionsReactive.Builder builder() {
@@ -159,7 +159,7 @@ public final class BatchOptionsReactive {
      * and {@link BatchOptionsReactive#getWriteScheduler()} is set to {@link Schedulers#io()}.
      *
      * @return a builder
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public static BatchOptionsReactive.Builder disabled() {
@@ -169,7 +169,7 @@ public final class BatchOptionsReactive {
     /**
      * A builder for {@code BatchOptionsReactive}.
      *
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @NotThreadSafe
     public static class Builder {
@@ -187,7 +187,7 @@ public final class BatchOptionsReactive {
          *
          * @param batchSize the number of data point to collect in batch
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder batchSize(final int batchSize) {
@@ -201,7 +201,7 @@ public final class BatchOptionsReactive {
          *
          * @param flushInterval the time to wait at most (milliseconds).
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder flushInterval(final int flushInterval) {
@@ -217,7 +217,7 @@ public final class BatchOptionsReactive {
          *
          * @param jitterInterval (milliseconds)
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder jitterInterval(final int jitterInterval) {
@@ -231,7 +231,7 @@ public final class BatchOptionsReactive {
          *
          * @param retryInterval the time to wait before retry unsuccessful write
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder retryInterval(final int retryInterval) {
@@ -249,7 +249,7 @@ public final class BatchOptionsReactive {
          *
          * @param bufferLimit maximum number of points stored in the retry buffer
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder bufferLimit(final int bufferLimit) {
@@ -264,7 +264,7 @@ public final class BatchOptionsReactive {
          *
          * @param writeScheduler the scheduler which is used for write data points.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder writeScheduler(@Nonnull final Scheduler writeScheduler) {
@@ -281,7 +281,7 @@ public final class BatchOptionsReactive {
          * @param backpressureStrategy the strategy to deal with buffer overflow when using onBackpressureBuffer.
          *                             Default {@link BackpressureOverflowStrategy#DROP_OLDEST};
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder backpressureStrategy(@Nonnull final BackpressureOverflowStrategy backpressureStrategy) {

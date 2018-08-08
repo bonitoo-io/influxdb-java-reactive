@@ -33,7 +33,7 @@ import io.bonitoo.influxdb.reactive.options.WriteOptions;
  * The event is published when the data was written through UDP to InfluxDB server.
  *
  * @author Jakub Bednar (bednar@github) (20/06/2018 07:56)
- * @since 3.0.0
+ * @since 1.0.0
  */
 public class WriteUDPEvent extends AbstractWriteEvent {
 

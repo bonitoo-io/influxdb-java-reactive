@@ -34,7 +34,7 @@ import org.influxdb.dto.QueryResult;
  * The event is published when is parsed streamed response to query result.
  *
  * @author Jakub Bednar (bednar@github) (14/06/2018 11:46)
- * @since 3.0.0
+ * @since 1.0.0
  */
 public class QueryParsedResponseEvent extends AbstractInfluxEvent {
 

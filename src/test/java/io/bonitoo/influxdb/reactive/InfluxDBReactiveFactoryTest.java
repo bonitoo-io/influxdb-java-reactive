@@ -32,7 +32,7 @@ import org.junit.runner.RunWith;
 
 /**
  * @author Jakub Bednar (bednar@github) (12/06/2018 12:54)
- * @since 3.0.0
+ * @since 1.0.0
  */
 @RunWith(JUnitPlatform.class)
 class InfluxDBReactiveFactoryTest {

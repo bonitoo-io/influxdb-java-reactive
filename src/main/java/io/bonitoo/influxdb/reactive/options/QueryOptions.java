@@ -35,7 +35,7 @@ import org.influxdb.impl.Preconditions;
  * QueryOptions are used to configure query data from the InfluxDB.
  *
  * @author Jakub Bednar (bednar@github) (11/06/2018 14:02)
- * @since 3.0.0
+ * @since 1.0.0
  */
 @ThreadSafe
 public final class QueryOptions {
@@ -61,7 +61,7 @@ public final class QueryOptions {
     /**
      * @return the number of QueryResults to process in one chunk.
      * @see QueryOptions.Builder#chunkSize(int)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     public int getChunkSize() {
         return chunkSize;
@@ -70,7 +70,7 @@ public final class QueryOptions {
     /**
      * @return the time unit of the results.
      * @see QueryOptions.Builder#precision(TimeUnit) (int)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public TimeUnit getPrecision() {
@@ -81,7 +81,7 @@ public final class QueryOptions {
      * Creates a builder instance.
      *
      * @return a builder
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public static QueryOptions.Builder builder() {
@@ -91,7 +91,7 @@ public final class QueryOptions {
     /**
      * A builder for {@code QueryOptions}.
      *
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @NotThreadSafe
     public static class Builder {
@@ -104,7 +104,7 @@ public final class QueryOptions {
          *
          * @param chunkSize the number of QueryResults to process in one chunk.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder chunkSize(final int chunkSize) {
@@ -118,7 +118,7 @@ public final class QueryOptions {
          *
          * @param timeUnit the time unit of the results.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder precision(@Nonnull final TimeUnit timeUnit) {

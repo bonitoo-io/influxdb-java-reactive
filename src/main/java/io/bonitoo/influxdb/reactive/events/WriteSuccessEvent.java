@@ -33,7 +33,7 @@ import io.bonitoo.influxdb.reactive.options.WriteOptions;
  * The event is published when arrived the success response from InfluxDB server.
  *
  * @author Jakub Bednar (bednar@github) (14/06/2018 09:14)
- * @since 3.0.0
+ * @since 1.0.0
  */
 public class WriteSuccessEvent extends AbstractWriteEvent {
 

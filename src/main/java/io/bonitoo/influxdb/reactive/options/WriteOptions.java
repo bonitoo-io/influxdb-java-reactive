@@ -40,7 +40,7 @@ import static org.influxdb.InfluxDB.DEFAULT_RETENTION_POLICY;
  * WriteOptions are used to configure writes to the InfluxDB.
  *
  * @author Jakub Bednar (bednar@github) (14/06/2018 15:44)
- * @since 3.0.0
+ * @since 1.0.0
  */
 @ThreadSafe
 public final class WriteOptions {
@@ -101,7 +101,7 @@ public final class WriteOptions {
     /**
      * @return if {@link Boolean#TRUE} than enable write data points through UDP
      * @see WriteOptions.Builder#udp(boolean, int)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     public boolean isUdpEnable() {
         return udpEnable;
@@ -111,7 +111,7 @@ public final class WriteOptions {
     /**
      * @return the UDP Port where InfluxDB is listening
      * @see WriteOptions.Builder#udp(boolean, int)
-     * @since 3.0.0
+     * @since 1.0.0
      */
     public int getUdpPort() {
         return udpPort;
@@ -121,7 +121,7 @@ public final class WriteOptions {
      * Creates a builder instance.
      *
      * @return a builder
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public static WriteOptions.Builder builder() {
@@ -131,7 +131,7 @@ public final class WriteOptions {
     /**
      * A builder for {@code WriteOptions}.
      *
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @NotThreadSafe
     public static class Builder {
@@ -148,7 +148,7 @@ public final class WriteOptions {
          *
          * @param database the name of the database to write
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder database(@Nonnull final String database) {
@@ -164,7 +164,7 @@ public final class WriteOptions {
          *
          * @param retentionPolicy the retentionPolicy to use
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder retentionPolicy(@Nonnull final String retentionPolicy) {
@@ -180,7 +180,7 @@ public final class WriteOptions {
          *
          * @param consistencyLevel the ConsistencyLevel to use
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder consistencyLevel(@Nonnull final InfluxDB.ConsistencyLevel consistencyLevel) {
@@ -196,7 +196,7 @@ public final class WriteOptions {
          *
          * @param precision the time precision to use
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder precision(@Nonnull final TimeUnit precision) {
@@ -217,7 +217,7 @@ public final class WriteOptions {
          * @param enable if {@link Boolean#TRUE} than enable write data points through UDP
          * @param port   the UDP Port where InfluxDB is listening
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder udp(final boolean enable, final int port) {

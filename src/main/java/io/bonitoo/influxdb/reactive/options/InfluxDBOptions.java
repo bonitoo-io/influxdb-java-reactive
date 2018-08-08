@@ -45,11 +45,11 @@ import static org.influxdb.InfluxDB.DEFAULT_RETENTION_POLICY;
  * @author Jakub Bednar (bednar@github) (01/06/2018 07:53)
  * @see InfluxDB
  * @see InfluxDBFactory
- * @since 3.0.0
+ * @since 1.0.0
  */
 public final class InfluxDBOptions {
 
-    //TODO add support message pack, replace since, "DONE" for message pack
+    //TODO "DONE" for message pack
 
     private String url;
 
@@ -96,7 +96,7 @@ public final class InfluxDBOptions {
      * The url to connect to InfluxDB.
      *
      * @return url
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public String getUrl() {
@@ -107,7 +107,7 @@ public final class InfluxDBOptions {
      * The username which is used to authorize against the InfluxDB instance.
      *
      * @return username
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nullable
     public String getUsername() {
@@ -118,7 +118,7 @@ public final class InfluxDBOptions {
      * The password for the username which is used to authorize against the InfluxDB instance.
      *
      * @return password
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nullable
     public String getPassword() {
@@ -129,7 +129,7 @@ public final class InfluxDBOptions {
      * The database which is used for writing points.
      *
      * @return database
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nullable
     public String getDatabase() {
@@ -140,7 +140,7 @@ public final class InfluxDBOptions {
      * The retention policy which is used for writing points.
      *
      * @return retention policy
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public String getRetentionPolicy() {
@@ -151,7 +151,7 @@ public final class InfluxDBOptions {
      * The consistency level which is used for writing points.
      *
      * @return retention policy
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public InfluxDB.ConsistencyLevel getConsistencyLevel() {
@@ -162,7 +162,7 @@ public final class InfluxDBOptions {
      * The default TimeUnit of the interval.
      *
      * @return time unit
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public TimeUnit getPrecision() {
@@ -173,7 +173,7 @@ public final class InfluxDBOptions {
      * The format of HTTP Response body from InfluxDB server.
      *
      * @return response format
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public InfluxDB.ResponseFormat getResponseFormat() {
@@ -184,7 +184,7 @@ public final class InfluxDBOptions {
      * The encoding of the point's data.
      *
      * @return media type
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public MediaType getMediaType() {
@@ -195,7 +195,7 @@ public final class InfluxDBOptions {
      * The HTTP client to use for communication to InfluxDB.
      *
      * @return okHttpClient
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public OkHttpClient.Builder getOkHttpClient() {
@@ -204,7 +204,7 @@ public final class InfluxDBOptions {
 
 //    /**
 //     * Returns list of listeners registered by this client.
-//     * @since 3.0.0
+//     * @since 1.0.0
 //     * @return unmodifiable list of listeners
 //     */
 //    @Nonnull
@@ -216,7 +216,7 @@ public final class InfluxDBOptions {
      * Creates a builder instance.
      *
      * @return a builder
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @Nonnull
     public static Builder builder() {
@@ -225,7 +225,7 @@ public final class InfluxDBOptions {
     /**
      * A builder for {@code InfluxDBOptions}.
      *
-     * @since 3.0.0
+     * @since 1.0.0
      */
     @NotThreadSafe
     public static class Builder {
@@ -252,7 +252,7 @@ public final class InfluxDBOptions {
          *
          * @param url the url to connect to InfluxDB. It must be defined.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder url(@Nonnull final String url) {
@@ -266,7 +266,7 @@ public final class InfluxDBOptions {
          *
          * @param username the username which is used to authorize against the InfluxDB instance. It may be null.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder username(@Nullable final String username) {
@@ -280,7 +280,7 @@ public final class InfluxDBOptions {
          * @param password the password for the username which is used to authorize against the InfluxDB
          *                 instance. It may be null.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder password(@Nullable final String password) {
@@ -293,7 +293,7 @@ public final class InfluxDBOptions {
          *
          * @param database the database to set.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder database(@Nullable final String database) {
@@ -307,7 +307,7 @@ public final class InfluxDBOptions {
          * @param retentionPolicy the retention policy to set. It may be null.
          *                        If null than use default policy "autogen".
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder retentionPolicy(@Nullable final String retentionPolicy) {
@@ -324,7 +324,7 @@ public final class InfluxDBOptions {
          * @param consistencyLevel the consistency level to set. It may be null.
          *                         If null than use default level {@link InfluxDB.ConsistencyLevel#ONE}.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder consistencyLevel(@Nullable final InfluxDB.ConsistencyLevel consistencyLevel) {
@@ -341,7 +341,7 @@ public final class InfluxDBOptions {
          * @param precision the default TimeUnit of the interval. It may be null.
          *                  If null than use default level {@link TimeUnit#NANOSECONDS}.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder precision(@Nullable final TimeUnit precision) {
@@ -357,7 +357,7 @@ public final class InfluxDBOptions {
          *
          * @param responseFormat Format of HTTP Response body from InfluxDB server
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder responseFormat(@Nullable final InfluxDB.ResponseFormat responseFormat) {
@@ -374,7 +374,7 @@ public final class InfluxDBOptions {
          * @param mediaType the content type of HTTP request/response. It may be null.
          *                 If null than use default encoding {@code text/plain; charset=utf-8}.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder mediaType(@Nullable final MediaType mediaType) {
@@ -389,7 +389,7 @@ public final class InfluxDBOptions {
          *
          * @param okHttpClient the HTTP client to use.
          * @return {@code this}
-         * @since 3.0.0
+         * @since 1.0.0
          */
         @Nonnull
         public Builder okHttpClient(@Nonnull final OkHttpClient.Builder okHttpClient) {

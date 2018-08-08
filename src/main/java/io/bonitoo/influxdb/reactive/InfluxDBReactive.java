@@ -49,7 +49,7 @@ import org.reactivestreams.Publisher;
  * </ul>
  *
  * @author Jakub Bednar (bednar@github) (29/05/2018 14:58)
- * @since 3.0.0
+ * @since 1.0.0
  */
 @Experimental
 public interface InfluxDBReactive {

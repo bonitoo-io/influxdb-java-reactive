@@ -30,7 +30,7 @@ import io.bonitoo.influxdb.reactive.options.WriteOptions;
 
 /**
  * @author Jakub Bednar (bednar@github) (18/06/2018 13:38)
- * @since 3.0.0
+ * @since 1.0.0
  */
 public abstract class AbstractWriteEvent extends AbstractInfluxEvent {
 
