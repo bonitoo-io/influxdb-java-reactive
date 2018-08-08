@@ -166,4 +166,10 @@ workflows:
           - Influx_DB1.1
     - deploy:
         requires:
-          - code_coverage
+          - JDK_LTS
+          - Influx_DB1.6
+          - Influx_DB1.5
+          - Influx_DB1.4
+          - Influx_DB1.3
+          - Influx_DB1.2
+          - Influx_DB1.1

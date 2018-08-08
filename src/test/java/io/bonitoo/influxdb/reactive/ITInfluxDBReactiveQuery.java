@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
-import io.bonitoo.influxdb.reactive.impl.AbstractITInfluxDBReactiveTest;
+import io.bonitoo.influxdb.reactive.impl.AbstractITInfluxDBReactive;
 import io.bonitoo.influxdb.reactive.options.BatchOptionsReactive;
 import io.bonitoo.influxdb.reactive.options.QueryOptions;
 
@@ -49,24 +49,14 @@ import org.junit.runner.RunWith;
  * @author Jakub Bednar (bednar@github) (11/06/2018 11:33)
  */
 @RunWith(JUnitPlatform.class)
-class ITInfluxDBReactiveQuery extends AbstractITInfluxDBReactiveTest {
+class ITInfluxDBReactiveQuery extends AbstractITInfluxDBReactive {
 
     @BeforeEach
     void setUp() {
 
         super.setUp(BatchOptionsReactive.DEFAULTS);
 
-        Flowable<H2OFeetMeasurement> measurements = Flowable.range(0, 1000).map(index -> {
-
-            String location = getLocation(index);
-            double level = index.doubleValue();
-            long millis = TimeUnit.MILLISECONDS.convert(index, TimeUnit.SECONDS);
-
-            return new H2OFeetMeasurement(location, level, "Feet = " + index, millis);
-        });
-
-        influxDBReactive.writeMeasurements(measurements);
-        verifier.waitForResponse(1);
+        initData();
     }
 
     @Test
@@ -215,6 +205,22 @@ class ITInfluxDBReactiveQuery extends AbstractITInfluxDBReactiveTest {
                 .assertValue(createPredicate(TimeUnit.NANOSECONDS));
     }
 
+    void initData() {
+
+        Flowable<H2OFeetMeasurement> measurements = Flowable.range(0, 1000).map(index -> {
+
+            String location = getLocation(index);
+            double level = index.doubleValue();
+            long millis = TimeUnit.MILLISECONDS.convert(index, TimeUnit.SECONDS);
+
+            return new H2OFeetMeasurement(location, level, "Feet = " + index, millis);
+        });
+
+        influxDBReactive.writeMeasurements(measurements);
+        verifier.waitForResponse(1);
+    }
+
+
     @Nonnull
     private Predicate<QueryResult> createPredicate(@Nonnull final TimeUnit requiredUnit) {
 
@@ -223,7 +229,7 @@ class ITInfluxDBReactiveQuery extends AbstractITInfluxDBReactiveTest {
             List<List<Object>> values = result.getResults().get(0).getSeries().get(0).getValues();
 
             List<Long> times = values.stream()
-                    .map(objects -> ((Double) objects.get(0)).longValue())
+                    .map(objects -> ((Number) objects.get(0)).longValue())
                     .collect(Collectors.toList());
 
             for (int i = 0; i < 999; i++) {

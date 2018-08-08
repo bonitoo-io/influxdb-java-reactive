@@ -50,6 +50,7 @@ class InfluxDBOptionsTest {
         Assertions.assertThat(options.getRetentionPolicy()).isEqualTo("autogen");
         Assertions.assertThat(options.getConsistencyLevel()).isEqualTo(InfluxDB.ConsistencyLevel.ONE);
         Assertions.assertThat(options.getPrecision()).isEqualTo(TimeUnit.NANOSECONDS);
+        Assertions.assertThat(options.getResponseFormat()).isEqualTo(InfluxDB.ResponseFormat.JSON);
         Assertions.assertThat(options.getMediaType()).isEqualTo(MediaType.parse("text/plain; charset=utf-8"));
         Assertions.assertThat(options.getOkHttpClient()).isNotNull();
     }
@@ -67,6 +68,7 @@ class InfluxDBOptionsTest {
                 .retentionPolicy("short-policy")
                 .consistencyLevel(InfluxDB.ConsistencyLevel.ALL)
                 .precision(TimeUnit.SECONDS)
+                .responseFormat(InfluxDB.ResponseFormat.MSGPACK)
                 .mediaType(MediaType.parse("text/plain; charset=US-ASCII"))
                 .okHttpClient(okBuilder)
                 .build();
@@ -132,6 +134,17 @@ class InfluxDBOptionsTest {
                 .build();
 
         Assertions.assertThat(options.getPrecision()).isEqualTo(TimeUnit.NANOSECONDS);
+    }
+
+    @Test
+    void responseFormatNull() {
+
+        InfluxDBOptions options = InfluxDBOptions.builder()
+                .url("http://influxdb:8086")
+                .responseFormat(null)
+                .build();
+
+        Assertions.assertThat(options.getResponseFormat()).isEqualTo(InfluxDB.ResponseFormat.JSON);
     }
 
     @Test

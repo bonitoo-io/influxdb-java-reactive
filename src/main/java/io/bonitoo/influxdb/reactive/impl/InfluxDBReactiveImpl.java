@@ -24,8 +24,8 @@ package io.bonitoo.influxdb.reactive.impl;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -68,7 +68,6 @@ import io.reactivex.subjects.PublishSubject;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okio.BufferedSource;
-import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBException;
 import org.influxdb.dto.BoundParameterQuery;
 import org.influxdb.dto.Point;
@@ -121,7 +120,7 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
                          @Nonnull final Scheduler jitterScheduler,
                          @Nonnull final Scheduler retryScheduler) {
 
-        super(options.getUrl(), options.getOkHttpClient(), InfluxDBServiceReactive.class, InfluxDB.ResponseFormat.JSON);
+        super(options.getUrl(), options.getOkHttpClient(), InfluxDBServiceReactive.class, options.getResponseFormat());
 
         //
         // Options
@@ -406,6 +405,7 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
         Objects.requireNonNull(queryOptions, "QueryOptions is required");
 
         return query(query, queryOptions)
+                .filter(queryResult -> queryResult.getResults() != null)
                 .map(queryResult -> resultMapper.toPOJO(queryResult, measurementType, queryOptions.getPrecision()))
                 .concatMap(Flowable::fromIterable);
     }
@@ -814,24 +814,27 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
                 //
                 while (!subscriber.isDisposed() && !source.exhausted()) {
 
-                    chunkProccesor.process(source, queryResult -> {
+                    Iterator<QueryResult> iterator = chunkProccesor.chunkIterable(source).iterator();
+
+                    while (!subscriber.isDisposed() && iterator.hasNext()) {
+                        QueryResult queryResult = iterator.next();
                         if (queryResult != null) {
 
                             subscriber.onNext(queryResult);
                             publish(new QueryParsedResponseEvent(source, queryResult));
                         }
-                    });
+                    }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
 
                 //
                 // Socket close by remote server or end of data
                 //
-                if (e.getMessage().equals("Socket closed") || e instanceof EOFException) {
+                if (isEOFException(e)) {
                     isCompleted = true;
                     subscriber.onComplete();
                 } else {
-                    throw new UncheckedIOException(e);
+                    throw new InfluxDBException(e);
                 }
             }
 
@@ -886,5 +889,16 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
         }
 
         return new InfluxDBException(throwable);
+    }
+
+    private boolean isEOFException(@Nullable final Throwable e) {
+
+        if (e == null) {
+            return false;
+        } else if (e.getMessage().contains("Socket closed") || e instanceof EOFException) {
+            return true;
+        } else {
+            return isEOFException(e.getCause());
+        }
     }
 }

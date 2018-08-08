@@ -25,7 +25,7 @@ package io.bonitoo.influxdb.reactive;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 
-import io.bonitoo.influxdb.reactive.impl.AbstractITInfluxDBReactiveTest;
+import io.bonitoo.influxdb.reactive.impl.AbstractITInfluxDBReactive;
 import io.bonitoo.influxdb.reactive.options.BatchOptionsReactive;
 import io.bonitoo.influxdb.reactive.options.WriteOptions;
 
@@ -46,7 +46,7 @@ import org.junit.runner.RunWith;
  * @author Jakub Bednar (bednar@github) (19/06/2018 14:29)
  */
 @RunWith(JUnitPlatform.class)
-class ITInfluxDBReactiveWriteUDP extends AbstractITInfluxDBReactiveTest {
+class ITInfluxDBReactiveWriteUDP extends AbstractITInfluxDBReactive {
 
     private final static int UDP_PORT = 8089;
     private final static String UDP_DATABASE = "udp";
@@ -120,7 +120,7 @@ class ITInfluxDBReactiveWriteUDP extends AbstractITInfluxDBReactiveTest {
         verifier.waitForResponse(1);
 
         // wait 2 seconds
-        Flowable.interval(3, TimeUnit.SECONDS, Schedulers.trampoline()).take(1).subscribe();
+        Flowable.interval(2, TimeUnit.SECONDS, Schedulers.trampoline()).take(1).subscribe();
 
         influxDBReactive.query(new Query("select * from " + measurementName + " group by *", UDP_DATABASE))
                 .test()

@@ -49,7 +49,7 @@ import static org.influxdb.InfluxDB.DEFAULT_RETENTION_POLICY;
  */
 public final class InfluxDBOptions {
 
-    //TODO add support message, add compile-and-tests
+    //TODO add support message pack, replace since, "DONE" for message pack
 
     private String url;
 
@@ -61,6 +61,8 @@ public final class InfluxDBOptions {
     private InfluxDB.ConsistencyLevel consistencyLevel;
 
     private TimeUnit precision;
+
+    private InfluxDB.ResponseFormat responseFormat;
     private MediaType mediaType;
 
     private OkHttpClient.Builder okHttpClient;
@@ -82,6 +84,8 @@ public final class InfluxDBOptions {
         consistencyLevel = builder.consistencyLevel;
 
         precision = builder.precision;
+
+        responseFormat = builder.responseFormat;
         mediaType = builder.mediaType;
 
         okHttpClient = builder.okHttpClient;
@@ -166,9 +170,20 @@ public final class InfluxDBOptions {
     }
 
     /**
+     * The format of HTTP Response body from InfluxDB server.
+     *
+     * @return response format
+     * @since 3.0.0
+     */
+    @Nonnull
+    public InfluxDB.ResponseFormat getResponseFormat() {
+        return responseFormat;
+    }
+
+    /**
      * The encoding of the point's data.
      *
-     * @return time unit
+     * @return media type
      * @since 3.0.0
      */
     @Nonnull
@@ -226,6 +241,7 @@ public final class InfluxDBOptions {
         private InfluxDB.ConsistencyLevel consistencyLevel = DEFAULT_CONSISTENCY_LEVEL;
         private TimeUnit precision = DEFAULT_PRECISION;
 
+        private InfluxDB.ResponseFormat responseFormat = InfluxDB.ResponseFormat.JSON;
         private MediaType mediaType = MediaType.parse("text/plain; charset=utf-8");
 
         private OkHttpClient.Builder okHttpClient = new OkHttpClient.Builder();
@@ -337,6 +353,22 @@ public final class InfluxDBOptions {
         }
 
         /**
+         * Set the Format of HTTP Response body from InfluxDB server.
+         *
+         * @param responseFormat Format of HTTP Response body from InfluxDB server
+         * @return {@code this}
+         * @since 3.0.0
+         */
+        @Nonnull
+        public Builder responseFormat(@Nullable final InfluxDB.ResponseFormat responseFormat) {
+            if (responseFormat != null) {
+                this.responseFormat = responseFormat;
+            }
+
+            return this;
+        }
+
+        /**
          * Set the content type of HTTP request/response.
          *
          * @param mediaType the content type of HTTP request/response. It may be null.
@@ -382,7 +414,7 @@ public final class InfluxDBOptions {
         @Nonnull
         public InfluxDBOptions build() {
 
-            if (url == null || url.isEmpty()) {
+            if (url == null) {
                 throw new IllegalStateException("The url to connect to InfluxDB has to be defined.");
             }
 

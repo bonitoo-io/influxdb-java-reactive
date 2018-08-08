@@ -35,7 +35,7 @@ import io.bonitoo.influxdb.reactive.events.BackpressureEvent;
 import io.bonitoo.influxdb.reactive.events.UnhandledErrorEvent;
 import io.bonitoo.influxdb.reactive.events.WritePartialEvent;
 import io.bonitoo.influxdb.reactive.events.WriteSuccessEvent;
-import io.bonitoo.influxdb.reactive.impl.AbstractITInfluxDBReactiveTest;
+import io.bonitoo.influxdb.reactive.impl.AbstractITInfluxDBReactive;
 import io.bonitoo.influxdb.reactive.options.BatchOptionsReactive;
 import io.bonitoo.influxdb.reactive.options.WriteOptions;
 
@@ -60,7 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jakub Bednar (bednar@github) (04/06/2018 10:06)
  */
 @RunWith(JUnitPlatform.class)
-class ITInfluxDBReactiveWrite extends AbstractITInfluxDBReactiveTest {
+class ITInfluxDBReactiveWrite extends AbstractITInfluxDBReactive {
 
     @Test
     void write() {

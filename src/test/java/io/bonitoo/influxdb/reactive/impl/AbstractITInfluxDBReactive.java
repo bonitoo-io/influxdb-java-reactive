@@ -35,6 +35,7 @@ import io.bonitoo.influxdb.reactive.options.BatchOptionsReactive;
 import io.bonitoo.influxdb.reactive.options.InfluxDBOptions;
 
 import okhttp3.OkHttpClient;
+import org.influxdb.InfluxDB;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 import org.junit.jupiter.api.AfterEach;
@@ -42,9 +43,9 @@ import org.junit.jupiter.api.AfterEach;
 /**
  * @author Jakub Bednar (bednar@github) (05/06/2018 09:14)
  */
-public abstract class AbstractITInfluxDBReactiveTest {
+public abstract class AbstractITInfluxDBReactive {
 
-    private static final Logger LOG = Logger.getLogger(AbstractITInfluxDBReactiveTest.class.getName());
+    private static final Logger LOG = Logger.getLogger(AbstractITInfluxDBReactive.class.getName());
 
     protected static final String DATABASE_NAME = "reactive_database";
 
@@ -53,8 +54,14 @@ public abstract class AbstractITInfluxDBReactiveTest {
     protected OkHttpClient okHttpClient;
 
     protected void setUp(@Nonnull final BatchOptionsReactive batchOptions) {
+        setUp(batchOptions, InfluxDB.ResponseFormat.JSON);
+    }
+
+    protected void setUp(@Nonnull final BatchOptionsReactive batchOptions,
+                         @Nonnull final InfluxDB.ResponseFormat responseFormat) {
 
         Objects.requireNonNull(batchOptions, "BatchOptionsReactive is required");
+        Objects.requireNonNull(responseFormat, "InfluxDB.ResponseFormat is required");
 
         String influxdbIP = System.getenv().getOrDefault("INFLUXDB_IP", "127.0.0.1");
         String influxdbPort = System.getenv().getOrDefault("INFLUXDB_PORT_API", "8086");
@@ -65,8 +72,8 @@ public abstract class AbstractITInfluxDBReactiveTest {
                 .password("admin")
                 .database(DATABASE_NAME)
                 .precision(TimeUnit.NANOSECONDS)
+                .responseFormat(responseFormat)
                 .build();
-
 
         influxDBReactive = new InfluxDBReactiveWrapper(options, batchOptions);
         verifier = new InfluxDBReactiveVerifier(influxDBReactive);
@@ -113,7 +120,7 @@ public abstract class AbstractITInfluxDBReactiveTest {
 
             super(options, batchOptions);
 
-            AbstractITInfluxDBReactiveTest.this.okHttpClient = (OkHttpClient) this.retrofit.callFactory();
+            AbstractITInfluxDBReactive.this.okHttpClient = (OkHttpClient) this.retrofit.callFactory();
         }
     }
 }
