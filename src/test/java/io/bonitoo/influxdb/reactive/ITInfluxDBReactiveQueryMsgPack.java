@@ -26,6 +26,7 @@ import io.bonitoo.influxdb.reactive.options.BatchOptionsReactive;
 
 import org.influxdb.InfluxDB;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 
@@ -33,6 +34,7 @@ import org.junit.runner.RunWith;
  * @author Jakub Bednar (bednar@github) (08/08/2018 07:51)
  */
 @RunWith(JUnitPlatform.class)
+@EnabledIfEnvironmentVariable(named = "INFLUXDB_VERSION", matches = "1\\.6|1\\.5|1\\.4")
 class ITInfluxDBReactiveQueryMsgPack extends ITInfluxDBReactiveQuery {
 
     @BeforeEach
