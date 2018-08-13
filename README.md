@@ -3,7 +3,7 @@
 [![Build Status](https://img.shields.io/circleci/project/github/bonitoo-io/influxdb-java-reactive/master.svg)](https://circleci.com/gh/bonitoo-io/workflows/influxdb-java-reactive/tree/master)
 [![codecov](https://codecov.io/gh/bonitoo-io/influxdb-java-reactive/branch/master/graph/badge.svg)](https://codecov.io/gh/bonitoo-io/influxdb-java-reactive)
 [![License](https://img.shields.io/github/license/bonitoo-io/influxdb-java-reactive.svg)](https://github.com/bonitoo-io/influxdb-java-reactive/blob/master/LICENSE)
-[![Snapshot Version](https://img.shields.io/nexus/s/https/apitea.com/nexus/io.bonitoo.flux/influxdb-java-reactive.svg)](https://apitea.com/nexus/content/repositories/bonitoo-snapshot/)
+[![Snapshot Version](https://img.shields.io/nexus/s/https/apitea.com/nexus/io.bonitoo.influxdb/influxdb-java-reactive.svg)](https://apitea.com/nexus/content/repositories/bonitoo-snapshot/)
 [![GitHub issues](https://img.shields.io/github/issues-raw/bonitoo-io/influxdb-java-reactive.svg)](https://github.com/bonitoo-io/influxdb-java-reactive/issues)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/bonitoo-io/influxdb-java-reactive.svg)](https://github.com/bonitoo-io/influxdb-java-reactive/pulls)
 
@@ -240,7 +240,6 @@ cpuLoad.value = 0.67D;
 influxDBReactive.writeMeasurement(cpuLoad, udpOptions);
 ```
 
-
 ### Queries
 The queries uses the [InfluxDB chunking](https://docs.influxdata.com/influxdb/latest/guides/querying_data/#chunking) 
 for streaming response to the consumer. The default `chunk_size` is preconfigured to 10,000 points 
@@ -324,6 +323,37 @@ influxDBReactive
 influxDBReactive
     .version()
     .subscribe(version -> System.out.println("InfluxDB version: " + version));
+```
+
+## FAQ
+
+#####  How to tell the system to stop sending more chunks once I've found what I'm looking for?
+
+This is done automatically by disposing the downstream sequence. 
+
+The query `select * from disk` return 1 000 000 rows, chunking is set to 1000 and 
+we want only the first 500 results. The result is that the stream is closed after first chunk.
+
+```java
+QueryOptions options = QueryOptions.builder()
+    .chunkSize(1_000)
+    .build();
+        
+Flowable<QueryResult> results = client
+    // 1 000 000 rows
+    .query(new Query("select * from disk", database), options)
+    // We want only the first 500
+    .take(500);
+```
+
+##### Is there a way to tell all chunks have arrived? 
+
+Yes, by `onComplete` action.
+
+```java
+Flowable<H2OFeetMeasurement> measurements = influxDBReactive
+    .query(query, H2OFeetMeasurement.class, options)
+    .doOnComplete(() -> System.out.println("All chunks have arrived."));
 ```
 
 ## Version

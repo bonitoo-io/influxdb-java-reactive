@@ -25,11 +25,11 @@ package io.bonitoo.influxdb.reactive.impl;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -809,20 +809,22 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
             try {
                 BufferedSource source = body.source();
 
+                Supplier<QueryResult> queryResultSupplier = chunkProccesor.chunkSupplier(source);
+
                 //
                 // Subscriber is not disposed && source has data => parse
                 //
-                while (!subscriber.isDisposed() && !source.exhausted()) {
+                while (!subscriber.isDisposed()) {
 
-                    Iterator<QueryResult> iterator = chunkProccesor.chunkIterable(source).iterator();
 
-                    while (!subscriber.isDisposed() && iterator.hasNext()) {
-                        QueryResult queryResult = iterator.next();
-                        if (queryResult != null) {
+                    QueryResult queryResult = queryResultSupplier.get();
+                    if (queryResult != null) {
 
-                            subscriber.onNext(queryResult);
-                            publish(new QueryParsedResponseEvent(source, queryResult));
-                        }
+                        subscriber.onNext(queryResult);
+                        publish(new QueryParsedResponseEvent(source, queryResult));
+                    } else {
+                        // query result is null => exhausted source
+                        break;
                     }
                 }
             } catch (Exception e) {
