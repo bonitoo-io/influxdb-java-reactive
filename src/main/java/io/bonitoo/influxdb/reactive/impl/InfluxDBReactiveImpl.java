@@ -68,6 +68,7 @@ import io.reactivex.subjects.PublishSubject;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okio.BufferedSource;
+import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBException;
 import org.influxdb.dto.BoundParameterQuery;
 import org.influxdb.dto.Point;
@@ -497,6 +498,16 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
     @Override
     public Maybe<String> version() {
         return ping().map(Pong::getVersion);
+    }
+
+    @Override
+    public InfluxDBReactive setLogLevel(@Nonnull final InfluxDB.LogLevel logLevel) {
+
+        Objects.requireNonNull(logLevel, "InfluxDB.LogLevel is required");
+
+        super.setHttpLoggingLevel(logLevel);
+
+        return this;
     }
 
     @Nonnull

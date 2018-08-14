@@ -327,7 +327,7 @@ influxDBReactive
 
 ## FAQ
 
-#####  How to tell the system to stop sending more chunks once I've found what I'm looking for?
+###  How to tell the system to stop sending more chunks once I've found what I'm looking for?
 
 This is done automatically by disposing the downstream sequence. 
 
@@ -346,7 +346,7 @@ Flowable<QueryResult> results = client
     .take(500);
 ```
 
-##### Is there a way to tell all chunks have arrived? 
+### Is there a way to tell all chunks have arrived? 
 
 Yes, by `onComplete` action.
 

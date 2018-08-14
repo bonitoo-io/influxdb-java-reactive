@@ -34,6 +34,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.annotations.Experimental;
+import org.influxdb.InfluxDB;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
@@ -332,6 +333,14 @@ public interface InfluxDBReactive {
      */
     @Nonnull
     Maybe<String> version();
+
+    /**
+     * Set the LogLevel which is used for REST related actions.
+     *
+     * @param logLevel the LogLevel to set.
+     * @return the InfluxDBReactive instance to be able to use it in a fluent manner.
+     */
+    InfluxDBReactive setLogLevel(@Nonnull final InfluxDB.LogLevel logLevel);
 
     /**
      * Enable Gzip compress for http request body.

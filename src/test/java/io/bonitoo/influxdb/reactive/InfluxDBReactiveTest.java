@@ -27,6 +27,7 @@ import io.bonitoo.influxdb.reactive.options.BatchOptionsReactive;
 
 import okhttp3.mockwebserver.MockResponse;
 import org.assertj.core.api.Assertions;
+import org.influxdb.InfluxDB;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.runner.JUnitPlatform;
@@ -48,9 +49,10 @@ class InfluxDBReactiveTest extends AbstractInfluxDBReactiveTest {
 
         Assertions.assertThat(influxDBReactive.isClosed()).isEqualTo(false);
 
-        influxDBReactive.close();
+        InfluxDBReactive influxDBReactive = this.influxDBReactive.close();
+        Assertions.assertThat(influxDBReactive).isEqualTo(this.influxDBReactive);
 
-        Assertions.assertThat(influxDBReactive.isClosed()).isEqualTo(true);
+        Assertions.assertThat(this.influxDBReactive.isClosed()).isEqualTo(true);
     }
 
     @Test
@@ -60,12 +62,14 @@ class InfluxDBReactiveTest extends AbstractInfluxDBReactiveTest {
         Assertions.assertThat(influxDBReactive.isGzipEnabled()).isEqualTo(false);
 
         // enable
-        influxDBReactive.enableGzip();
-        Assertions.assertThat(influxDBReactive.isGzipEnabled()).isEqualTo(true);
+        InfluxDBReactive influxDBReactive = this.influxDBReactive.enableGzip();
+        Assertions.assertThat(this.influxDBReactive.isGzipEnabled()).isEqualTo(true);
+        Assertions.assertThat(influxDBReactive).isEqualTo(this.influxDBReactive);
 
         // disable
-        influxDBReactive.disableGzip();
-        Assertions.assertThat(influxDBReactive.isGzipEnabled()).isEqualTo(false);
+        influxDBReactive = this.influxDBReactive.disableGzip();
+        Assertions.assertThat(this.influxDBReactive.isGzipEnabled()).isEqualTo(false);
+        Assertions.assertThat(influxDBReactive).isEqualTo(this.influxDBReactive);
     }
 
     @Test
@@ -97,5 +101,22 @@ class InfluxDBReactiveTest extends AbstractInfluxDBReactiveTest {
                 .test()
                 .assertValueCount(1)
                 .assertValue("v1.5.2");
+    }
+
+    @Test
+    void logLevel() {
+
+        InfluxDBReactive influxDBReactive = this.influxDBReactive.setLogLevel(InfluxDB.LogLevel.BASIC);
+
+        Assertions.assertThat(influxDBReactive).isEqualTo(this.influxDBReactive);
+    }
+
+    @Test
+    void logLevelIsRequired() {
+
+        //noinspection ConstantConditions
+        Assertions.assertThatThrownBy(() -> influxDBReactive.setLogLevel(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("InfluxDB.LogLevel is required");
     }
 }
