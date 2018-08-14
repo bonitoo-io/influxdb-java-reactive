@@ -35,7 +35,7 @@ aliases:
       docker kill influxdb || true
       docker rm influxdb || true
       docker pull influxdb:${INFLUXDB_VERSION}-alpine || true
-      docker run --name influxdb --publish 8086:8086 --publish 8089:8089/udp --volume ${PWD}/config/influxdb.conf:/etc/influxdb/influxdb.conf influxdb:${INFLUXDB_VERSION}-alpine
+      docker run --detach --name influxdb --publish 8086:8086 --publish 8089:8089/udp --volume ${PWD}/config/influxdb.conf:/etc/influxdb/influxdb.conf influxdb:${INFLUXDB_VERSION}-alpine
 
 shared: &shared
   working_directory: ~/repo
