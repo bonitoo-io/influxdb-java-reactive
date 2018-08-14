@@ -18,6 +18,7 @@ script: ./compile-and-test.sh
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - docker run -it --rm --volume ${PWD}:/usr/src/mymaven --volume ${PWD}/.m2:/root/.m2 --workdir /usr/src/mymaven maven:3-jdk-8-slim mvn clean deploy -DskipTests -s config/deploy-settings.xml -U
 
 after_failure:
   - cat target/surefire-reports/*.txt
