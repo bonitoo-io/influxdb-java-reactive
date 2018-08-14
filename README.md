@@ -3,7 +3,7 @@
 > This library is under development and no stable version has been released yet.  
 > The API can change at any moment.
 
-[![Build Status](https://img.shields.io/circleci/project/github/bonitoo-io/influxdb-java-reactive/master.svg)](https://circleci.com/gh/bonitoo-io/workflows/influxdb-java-reactive/tree/master)
+[![Build Status](https://travis-ci.org/bonitoo-io/influxdb-java-reactive.svg?branch=master)](https://travis-ci.org/bonitoo-io/influxdb-java-reactive)
 [![codecov](https://codecov.io/gh/bonitoo-io/influxdb-java-reactive/branch/master/graph/badge.svg)](https://codecov.io/gh/bonitoo-io/influxdb-java-reactive)
 [![License](https://img.shields.io/github/license/bonitoo-io/influxdb-java-reactive.svg)](https://github.com/bonitoo-io/influxdb-java-reactive/blob/master/LICENSE)
 [![Snapshot Version](https://img.shields.io/nexus/s/https/apitea.com/nexus/io.bonitoo.influxdb/influxdb-java-reactive.svg)](https://apitea.com/nexus/content/repositories/bonitoo-snapshot/)
