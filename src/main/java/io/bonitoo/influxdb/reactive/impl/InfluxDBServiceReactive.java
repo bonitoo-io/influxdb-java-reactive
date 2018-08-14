@@ -29,7 +29,6 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
-import org.influxdb.impl.InfluxDBService;
 import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -41,28 +40,39 @@ import retrofit2.http.Streaming;
  * @author Jakub Bednar (bednar@github) (01/06/2018 11:56)
  * @since 1.0.0
  */
-public interface InfluxDBServiceReactive {
+interface InfluxDBServiceReactive {
+
+    String U = "u";
+    String P = "p";
+    String Q = "q";
+    String DB = "db";
+    String RP = "rp";
+    String PARAMS = "params";
+    String PRECISION = "precision";
+    String CONSISTENCY = "consistency";
+    String EPOCH = "epoch";
+    String CHUNK_SIZE = "chunk_size";
 
     @POST("/write")
     @Nonnull
-    Completable writePoints(@Query(InfluxDBService.U) String username,
-                            @Query(InfluxDBService.P) String password,
-                            @Query(InfluxDBService.DB) String database,
-                            @Query(InfluxDBService.RP) String retentionPolicy,
-                            @Query(InfluxDBService.PRECISION) String precision,
-                            @Query(InfluxDBService.CONSISTENCY) String consistency,
+    Completable writePoints(@Query(U) String username,
+                            @Query(P) String password,
+                            @Query(DB) String database,
+                            @Query(RP) String retentionPolicy,
+                            @Query(PRECISION) String precision,
+                            @Query(CONSISTENCY) String consistency,
                             @Body RequestBody points);
 
     @Streaming
     @GET("/query?chunked=true")
     @Nonnull
-    Observable<ResponseBody> query(@Query(InfluxDBService.U) String username,
-                                   @Query(InfluxDBService.P) String password,
-                                   @Query(InfluxDBService.DB) String db,
-                                   @Query(InfluxDBService.EPOCH) String epoch,
-                                   @Query(InfluxDBService.CHUNK_SIZE) int chunkSize,
-                                   @Query(value = InfluxDBService.Q, encoded = true) String query,
-                                   @Query(value = InfluxDBService.PARAMS, encoded = true) String params);
+    Observable<ResponseBody> query(@Query(U) String username,
+                                   @Query(P) String password,
+                                   @Query(DB) String db,
+                                   @Query(EPOCH) String epoch,
+                                   @Query(CHUNK_SIZE) int chunkSize,
+                                   @Query(value = Q, encoded = true) String query,
+                                   @Query(value = PARAMS, encoded = true) String params);
 
     @GET("/ping")
     Maybe<Response<ResponseBody>> ping();
