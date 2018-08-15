@@ -484,7 +484,7 @@ class ITInfluxDBReactiveWrite extends AbstractITInfluxDBReactive {
 
         writeMeasurementsInThreads();
 
-        Assertions.assertThat(okHttpClient.connectionPool().connectionCount()).isEqualTo(1);
+        Assertions.assertThat(connectionPool.connectionCount()).isEqualTo(1);
     }
 
     @Test
@@ -494,7 +494,7 @@ class ITInfluxDBReactiveWrite extends AbstractITInfluxDBReactive {
 
         writeMeasurementsInThreads();
 
-        Assertions.assertThat(okHttpClient.connectionPool().connectionCount()).isGreaterThan(1);
+        Assertions.assertThat(connectionPool.connectionCount()).isGreaterThan(1);
     }
 
     @Test

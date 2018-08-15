@@ -65,6 +65,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.processors.PublishProcessor;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import okhttp3.Headers;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import okio.BufferedSource;
@@ -75,7 +76,7 @@ import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
-import org.influxdb.impl.AbstractInfluxDB;
+import org.influxdb.impl.InfluxDBImpl;
 import org.influxdb.impl.InfluxDBResultMapper;
 import org.influxdb.impl.TimeUtil;
 import org.reactivestreams.Publisher;
@@ -87,7 +88,9 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 /**
  * @author Jakub Bednar (bednar@github) (01/06/2018 10:37)
  */
-public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReactive> implements InfluxDBReactive {
+public class InfluxDBReactiveImpl implements InfluxDBReactive {
+
+    // TODO test all delegate.X by integration tests
 
     private static final Logger LOG = Logger.getLogger(InfluxDBReactiveImpl.class.getName());
 
@@ -97,10 +100,13 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
 
     private final InfluxDBOptions options;
     private final BatchOptionsReactive batchOptions;
+
     @Nullable
     private final WriteOptions defaultWriteOptions;
     private final QueryOptions defaultQueryOptions;
 
+    private final InfluxDBImpl delegate;
+    private final InfluxDBServiceReactive influxDBService;
     private final InfluxDBResultMapper resultMapper;
 
     public InfluxDBReactiveImpl(@Nonnull final InfluxDBOptions options) {
@@ -121,7 +127,18 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
                          @Nonnull final Scheduler jitterScheduler,
                          @Nonnull final Scheduler retryScheduler) {
 
-        super(options.getUrl(), options.getOkHttpClient(), InfluxDBServiceReactive.class, options.getResponseFormat());
+        Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create());
+
+        delegate = new InfluxDBImpl(
+                options.getUrl(),
+                options.getUsername(),
+                options.getPassword(),
+                options.getOkHttpClient(),
+                retrofitBuilder,
+                options.getResponseFormat());
+
+        influxDBService = retrofitBuilder.build().create(InfluxDBServiceReactive.class);
 
         //
         // Options
@@ -167,13 +184,6 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
                 .compose(jitter(jitterScheduler))
                 .doOnError(throwable -> publish(new UnhandledErrorEvent(throwable)))
                 .subscribe(new WritePointsConsumer(retryScheduler));
-    }
-
-    @Override
-    protected void configureRetrofit(@Nonnull final Retrofit.Builder retrofitBuilder) {
-        super.configureRetrofit(retrofitBuilder);
-
-        retrofitBuilder.addCallAdapterFactory(RxJava2CallAdapterFactory.create());
     }
 
     @Override
@@ -491,7 +501,22 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
         return influxDBService
                 .ping()
                 .doOnSubscribe(onSubscribe)
-                .map(response -> createPong(onSubscribe.subscribeTime, response));
+                .map(response -> {
+
+                    Headers headers = response.headers();
+
+                    String version = headers.toMultimap().keySet().stream()
+                            .filter("X-Influxdb-Version"::equalsIgnoreCase)
+                            .map(headers::get)
+                            .findFirst()
+                            .orElse(Pong.UNKNOWN_VERSION);
+
+                    Pong pong = new Pong();
+                    pong.setVersion(version);
+                    pong.setResponseTime(onSubscribe.subscribeTime);
+
+                    return pong;
+                });
     }
 
     @Nonnull
@@ -505,7 +530,7 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
 
         Objects.requireNonNull(logLevel, "InfluxDB.LogLevel is required");
 
-        super.setHttpLoggingLevel(logLevel);
+        delegate.setLogLevel(logLevel);
 
         return this;
     }
@@ -513,20 +538,20 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
     @Nonnull
     @Override
     public InfluxDBReactive enableGzip() {
-        this.gzipRequestInterceptor.enable();
+        delegate.enableGzip();
         return this;
     }
 
     @Nonnull
     @Override
     public InfluxDBReactive disableGzip() {
-        this.gzipRequestInterceptor.disable();
+        delegate.disableGzip();
         return this;
     }
 
     @Override
     public boolean isGzipEnabled() {
-        return this.gzipRequestInterceptor.isEnabled();
+        return delegate.isGzipEnabled();
     }
 
 
@@ -540,7 +565,7 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
             processor.onComplete();
             eventPublisher.onComplete();
         } finally {
-            super.destroy();
+            delegate.close();
         }
 
         return this;
@@ -716,7 +741,7 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
             if (writeOptions.isUdpEnable()) {
 
                 completable = Completable.fromAction(
-                        () -> writeRecordsThroughUDP(writeOptions.getUdpPort(), body));
+                        () -> delegate.write(writeOptions.getUdpPort(), body));
 
             } else {
 
@@ -820,7 +845,7 @@ public class InfluxDBReactiveImpl extends AbstractInfluxDB<InfluxDBServiceReacti
             try {
                 BufferedSource source = body.source();
 
-                Supplier<QueryResult> queryResultSupplier = chunkProccesor.chunkSupplier(source);
+                Supplier<QueryResult> queryResultSupplier = delegate.chunkSupplier(source);
 
                 //
                 // Subscriber is not disposed && source has data => parse

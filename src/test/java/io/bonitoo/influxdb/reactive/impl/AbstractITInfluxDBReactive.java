@@ -31,9 +31,11 @@ import javax.annotation.Nonnull;
 
 import io.bonitoo.influxdb.reactive.H2OFeetMeasurement;
 import io.bonitoo.influxdb.reactive.InfluxDBReactive;
+import io.bonitoo.influxdb.reactive.InfluxDBReactiveFactory;
 import io.bonitoo.influxdb.reactive.options.BatchOptionsReactive;
 import io.bonitoo.influxdb.reactive.options.InfluxDBOptions;
 
+import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import org.influxdb.InfluxDB;
 import org.influxdb.dto.Query;
@@ -51,7 +53,7 @@ public abstract class AbstractITInfluxDBReactive {
 
     protected InfluxDBReactive influxDBReactive;
     protected InfluxDBReactiveVerifier verifier;
-    protected OkHttpClient okHttpClient;
+    protected ConnectionPool connectionPool;
 
     protected void setUp(@Nonnull final BatchOptionsReactive batchOptions) {
         setUp(batchOptions, InfluxDB.ResponseFormat.JSON);
@@ -66,6 +68,8 @@ public abstract class AbstractITInfluxDBReactive {
         String influxdbIP = System.getenv().getOrDefault("INFLUXDB_IP", "127.0.0.1");
         String influxdbPort = System.getenv().getOrDefault("INFLUXDB_PORT_API", "8086");
 
+
+        connectionPool = new ConnectionPool();
         InfluxDBOptions options = InfluxDBOptions.builder()
                 .url("http://" + influxdbIP + ":" + influxdbPort)
                 .username("admin")
@@ -73,9 +77,10 @@ public abstract class AbstractITInfluxDBReactive {
                 .database(DATABASE_NAME)
                 .precision(TimeUnit.NANOSECONDS)
                 .responseFormat(responseFormat)
+                .okHttpClient(new OkHttpClient.Builder().connectionPool(connectionPool))
                 .build();
 
-        influxDBReactive = new InfluxDBReactiveWrapper(options, batchOptions);
+        influxDBReactive = InfluxDBReactiveFactory.connect(options, batchOptions);
         verifier = new InfluxDBReactiveVerifier(influxDBReactive);
 
         simpleQuery("CREATE DATABASE " + DATABASE_NAME);
@@ -87,6 +92,7 @@ public abstract class AbstractITInfluxDBReactive {
     void cleanUp() {
         simpleQuery("DROP DATABASE " + DATABASE_NAME);
 
+        connectionPool.evictAll();
         influxDBReactive.close();
     }
 
@@ -111,16 +117,5 @@ public abstract class AbstractITInfluxDBReactive {
         Query reactive_database = new Query("select * from h2o_feet group by *", databaseName);
 
         return influxDBReactive.query(reactive_database, H2OFeetMeasurement.class).toList().blockingGet();
-    }
-
-    private class InfluxDBReactiveWrapper extends InfluxDBReactiveImpl {
-
-        private InfluxDBReactiveWrapper(@Nonnull final InfluxDBOptions options,
-                                        @Nonnull final BatchOptionsReactive batchOptions) {
-
-            super(options, batchOptions);
-
-            AbstractITInfluxDBReactive.this.okHttpClient = (OkHttpClient) this.retrofit.callFactory();
-        }
     }
 }
