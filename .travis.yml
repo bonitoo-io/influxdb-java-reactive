@@ -1,4 +1,8 @@
 sudo: required
+cache:
+  timeout: 1000
+  directories:
+  - ${PWD}/.m2
 
 services:
   - docker
@@ -16,9 +20,14 @@ env:
 
 script: ./compile-and-test.sh
 
+jobs:
+  include:
+  - stage: deploy
+    script: docker run -it --rm --volume ${PWD}:/usr/src/mymaven --volume ${PWD}/.m2:/root/.m2 --workdir /usr/src/mymaven maven:${MAVEN_JAVA_VERSION} mvn clean deploy -DskipTests -s config/deploy-settings.xml -U -Denv.BONITOO_SNAPSHOT_USER=${BONITOO_SNAPSHOT_USER} -Denv.BONITOO_SNAPSHOT_PASSWORD=${BONITOO_SNAPSHOT_PASSWORD}
+    env: MAVEN_JAVA_VERSION=3-jdk-8-slim INFLUXDB_VERSION=1.6
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - docker run -it --rm --volume ${PWD}:/usr/src/mymaven --volume ${PWD}/.m2:/root/.m2 --workdir /usr/src/mymaven maven:3-jdk-8-slim mvn clean deploy -DskipTests -s config/deploy-settings.xml -U
 
 after_failure:
   - cat target/surefire-reports/*.txt
