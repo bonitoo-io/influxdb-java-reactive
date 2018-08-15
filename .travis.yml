@@ -1,6 +1,6 @@
 sudo: required
 cache:
-  timeout: 1000
+  timeout: 10000
   directories:
   - ${PWD}/.m2
 
@@ -27,7 +27,10 @@ jobs:
     env: MAVEN_JAVA_VERSION=3-jdk-8-slim INFLUXDB_VERSION=1.6
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - echo $TRAVIS_BUILD_STAGE_NAME
+  - if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ] && [ "$MAVEN_JAVA_VERSION" == "3-jdk-8-slim" ]; then
+      bash <(curl -s https://codecov.io/bash)
+    fi
 
 after_failure:
   - cat target/surefire-reports/*.txt
