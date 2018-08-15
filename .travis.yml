@@ -7,8 +7,8 @@ cache:
 services:
   - docker
 
-# We test against all influxdb versions with the most actual JDK.
-# Test only the most recent influxdb version with JDK8 which will be legacy soon.
+# We test against all InfluxDB versions with the most actual JDK
+# and we also test the most recent InfluxDB version with LTS JDK.
 env:
   - MAVEN_JAVA_VERSION=3-jdk-10-slim INFLUXDB_VERSION=1.6
   - MAVEN_JAVA_VERSION=3-jdk-10-slim INFLUXDB_VERSION=1.5
@@ -27,10 +27,7 @@ jobs:
     env: MAVEN_JAVA_VERSION=3-jdk-8-slim INFLUXDB_VERSION=1.6
 
 after_success:
-  - echo $TRAVIS_BUILD_STAGE_NAME
-  - if [ "$TRAVIS_BUILD_STAGE_NAME" == "Test" ] && [ "$MAVEN_JAVA_VERSION" == "3-jdk-8-slim" ]; then
-      bash <(curl -s https://codecov.io/bash)
-    fi
+  - test $TRAVIS_BUILD_STAGE_NAME = "Test" && bash <(curl -s https://codecov.io/bash)
 
 after_failure:
   - cat target/surefire-reports/*.txt
