@@ -1,8 +1,13 @@
 sudo: required
+
 cache:
   timeout: 10000
   directories:
   - ${PWD}/.m2
+
+before_cache:
+  - rm -f ${PWD}/.m2/copy_reference_file.log
+  - rm -f ${PWD}/.m2/repository/io/bonitoo/influxdb/influxdb-java-reactive/
 
 services:
   - docker
@@ -27,7 +32,7 @@ jobs:
     env: MAVEN_JAVA_VERSION=3-jdk-8-slim INFLUXDB_VERSION=1.6
 
 after_success:
-  - test $TRAVIS_BUILD_STAGE_NAME = "Test" && bash <(curl -s https://codecov.io/bash)
+  - test $TRAVIS_BUILD_STAGE_NAME = "Test" && test $MAVEN_JAVA_VERSION = "3-jdk-8-slim" && bash <(curl -s https://codecov.io/bash)
 
 after_failure:
   - cat target/surefire-reports/*.txt
