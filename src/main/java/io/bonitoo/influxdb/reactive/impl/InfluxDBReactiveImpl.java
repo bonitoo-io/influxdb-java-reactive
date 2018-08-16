@@ -25,6 +25,7 @@ package io.bonitoo.influxdb.reactive.impl;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -51,6 +52,8 @@ import io.bonitoo.influxdb.reactive.options.InfluxDBOptions;
 import io.bonitoo.influxdb.reactive.options.QueryOptions;
 import io.bonitoo.influxdb.reactive.options.WriteOptions;
 
+import com.squareup.moshi.JsonAdapter;
+import com.squareup.moshi.Moshi;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -79,6 +82,7 @@ import org.influxdb.dto.QueryResult;
 import org.influxdb.impl.InfluxDBImpl;
 import org.influxdb.impl.InfluxDBResultMapper;
 import org.influxdb.impl.TimeUtil;
+import org.influxdb.msgpack.MessagePackTraverser;
 import org.reactivestreams.Publisher;
 import retrofit2.HttpException;
 import retrofit2.Response;
@@ -108,6 +112,7 @@ public class InfluxDBReactiveImpl implements InfluxDBReactive {
     private final InfluxDBImpl delegate;
     private final InfluxDBServiceReactive influxDBService;
     private final InfluxDBResultMapper resultMapper;
+    private final ChunkProcessor chunkProcessor;
 
     public InfluxDBReactiveImpl(@Nonnull final InfluxDBOptions options) {
         this(options, BatchOptionsReactive.DEFAULTS);
@@ -139,6 +144,17 @@ public class InfluxDBReactiveImpl implements InfluxDBReactive {
                 options.getResponseFormat());
 
         influxDBService = retrofitBuilder.build().create(InfluxDBServiceReactive.class);
+
+        switch (options.getResponseFormat()) {
+            case MSGPACK:
+                chunkProcessor = new MessagePackChunkProcessor();
+                break;
+
+            default:
+            case JSON:
+                chunkProcessor = new JSONChunkProcessor();
+                break;
+        }
 
         //
         // Options
@@ -845,7 +861,7 @@ public class InfluxDBReactiveImpl implements InfluxDBReactive {
             try {
                 BufferedSource source = body.source();
 
-                Supplier<QueryResult> queryResultSupplier = delegate.chunkSupplier(source);
+                Supplier<QueryResult> queryResultSupplier = chunkProcessor.chunkSupplier(source);
 
                 //
                 // Subscriber is not disposed && source has data => parse
@@ -937,6 +953,68 @@ public class InfluxDBReactiveImpl implements InfluxDBReactive {
             return true;
         } else {
             return isEOFException(e.getCause());
+        }
+    }
+
+    private interface ChunkProcessor {
+
+        /**
+         * The supplier that supply chunk results. After the {@code source}
+         * is exhausted the {@code Supplier<QueryResult>} return null.
+         *
+         * @param source of the {@link ResponseBody}
+         * @return supplier of chunks
+         */
+        @Nonnull
+        Supplier<QueryResult> chunkSupplier(@Nonnull final BufferedSource source);
+    }
+
+    private final class MessagePackChunkProcessor implements ChunkProcessor {
+
+        @Nonnull
+        @Override
+        public Supplier<QueryResult> chunkSupplier(@Nonnull final BufferedSource source) {
+            return new Supplier<QueryResult>() {
+
+                private Iterator<QueryResult> iterator = null;
+
+                @Override
+                public QueryResult get() {
+                    if (iterator == null) {
+                        iterator = new MessagePackTraverser().traverse(source.inputStream()).iterator();
+                    }
+
+                    if (iterator.hasNext()) {
+                        return iterator.next();
+                    }
+
+                    return null;
+                }
+            };
+        }
+    }
+
+    private final class JSONChunkProcessor implements ChunkProcessor {
+
+        private final JsonAdapter<QueryResult> adapter;
+
+        private JSONChunkProcessor() {
+            this.adapter = new Moshi.Builder().build().adapter(QueryResult.class);
+        }
+
+        @Nonnull
+        @Override
+        public Supplier<QueryResult> chunkSupplier(@Nonnull final BufferedSource source) {
+
+            return () -> {
+                try {
+                    return adapter.fromJson(source);
+                } catch (IOException e) {
+
+                    LOG.log(java.util.logging.Level.FINER, "There are no more bytes in this source: " + source, e);
+                    return null;
+                }
+            };
         }
     }
 }

@@ -72,7 +72,7 @@ docker run -it --rm \
        --env INFLUXDB_IP=influxdb \
        --env PROXY_API_URL=${PROXY_API_URL} \
        --env PROXY_UDP_PORT=${PROXY_UDP_PORT} \
-       maven:${MAVEN_JAVA_VERSION} mvn clean install
+       maven:${MAVEN_JAVA_VERSION} mvn clean install -U
 
 docker kill influxdb || true
 docker kill nginx || true
