@@ -94,8 +94,6 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
  */
 public class InfluxDBReactiveImpl implements InfluxDBReactive {
 
-    // TODO test all delegate.X by integration tests
-
     private static final Logger LOG = Logger.getLogger(InfluxDBReactiveImpl.class.getName());
 
     private final PublishProcessor<AbstractData> processor;

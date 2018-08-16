@@ -41,7 +41,7 @@ class InfluxDBReactiveTest extends AbstractInfluxDBReactiveTest {
 
     @BeforeEach
     void setUp() {
-        super.setUp(BatchOptionsReactive.DEFAULTS);
+        super.setUp(BatchOptionsReactive.DISABLED);
     }
 
     @Test
@@ -70,6 +70,28 @@ class InfluxDBReactiveTest extends AbstractInfluxDBReactiveTest {
         influxDBReactive = this.influxDBReactive.disableGzip();
         Assertions.assertThat(this.influxDBReactive.isGzipEnabled()).isEqualTo(false);
         Assertions.assertThat(influxDBReactive).isEqualTo(this.influxDBReactive);
+    }
+
+    @Test
+    void gzipHeader() throws InterruptedException {
+
+        String record = "h2o_feet,location=coyote_creek " +
+                "level\\ description=\"below 3 feet\",water_level=2.927 1440046800";
+
+        influxDBServer.enqueue(new MockResponse());
+        influxDBServer.enqueue(new MockResponse());
+
+        // Disabled GZIP
+        influxDBReactive.disableGzip();
+        influxDBReactive.writeRecord(record);
+        // GZIP header IS NOT set
+        Assertions.assertThat(influxDBServer.takeRequest().getHeader("Content-Encoding")).isNull();
+
+        // Enabled GZIP
+        influxDBReactive.enableGzip();
+        influxDBReactive.writeRecord(record);
+        // GZIP header IS set
+        Assertions.assertThat(influxDBServer.takeRequest().getHeader("Content-Encoding")).isEqualTo("gzip");
     }
 
     @Test
