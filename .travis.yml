@@ -5,10 +5,6 @@ cache:
   directories:
   - ${PWD}/.m2
 
-before_cache:
-  - rm -f ${PWD}/.m2/copy_reference_file.log
-  - rm -rf ${PWD}/.m2/repository/io/bonitoo/influxdb/influxdb-java-reactive/
-
 services:
   - docker
 
