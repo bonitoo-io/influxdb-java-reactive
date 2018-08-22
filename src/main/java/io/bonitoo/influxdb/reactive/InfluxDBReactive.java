@@ -23,6 +23,7 @@
 package io.bonitoo.influxdb.reactive;
 
 
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nonnull;
 
 import io.bonitoo.influxdb.reactive.events.AbstractInfluxEvent;
@@ -54,6 +55,21 @@ import org.reactivestreams.Publisher;
  */
 @Experimental
 public interface InfluxDBReactive {
+
+    /**
+     * Default Retention policy.
+     */
+    public static final String DEFAULT_RETENTION_POLICY = "autogen";
+
+    /**
+     * Default Consistency Level for Write Operations.
+     */
+    public static final InfluxDB.ConsistencyLevel DEFAULT_CONSISTENCY_LEVEL = InfluxDB.ConsistencyLevel.ONE;
+
+    /**
+     * Default Time Precision for Write Operations.
+     */
+    public static final TimeUnit DEFAULT_PRECISION = TimeUnit.NANOSECONDS;
 
     /**
      * Write a single Measurement to the default database.

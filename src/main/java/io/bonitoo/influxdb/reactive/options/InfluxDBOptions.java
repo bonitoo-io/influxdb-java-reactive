@@ -28,15 +28,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import io.bonitoo.influxdb.reactive.InfluxDBReactive;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.impl.Preconditions;
-
-import static org.influxdb.InfluxDB.DEFAULT_CONSISTENCY_LEVEL;
-import static org.influxdb.InfluxDB.DEFAULT_PRECISION;
-import static org.influxdb.InfluxDB.DEFAULT_RETENTION_POLICY;
 
 
 /**
@@ -237,9 +235,9 @@ public final class InfluxDBOptions {
 
         private String database;
 
-        private String retentionPolicy = DEFAULT_RETENTION_POLICY;
-        private InfluxDB.ConsistencyLevel consistencyLevel = DEFAULT_CONSISTENCY_LEVEL;
-        private TimeUnit precision = DEFAULT_PRECISION;
+        private String retentionPolicy = InfluxDBReactive.DEFAULT_RETENTION_POLICY;
+        private InfluxDB.ConsistencyLevel consistencyLevel = InfluxDBReactive.DEFAULT_CONSISTENCY_LEVEL;
+        private TimeUnit precision = InfluxDBReactive.DEFAULT_PRECISION;
 
         private InfluxDB.ResponseFormat responseFormat = InfluxDB.ResponseFormat.JSON;
         private MediaType mediaType = MediaType.parse("text/plain; charset=utf-8");

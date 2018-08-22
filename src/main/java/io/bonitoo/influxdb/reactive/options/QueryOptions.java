@@ -28,7 +28,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 
-import org.influxdb.InfluxDB;
+import io.bonitoo.influxdb.reactive.InfluxDBReactive;
+
 import org.influxdb.impl.Preconditions;
 
 /**
@@ -97,7 +98,7 @@ public final class QueryOptions {
     public static class Builder {
 
         private int chunkSize = DEFAULT_CHUNK_SIZE;
-        private TimeUnit precision = InfluxDB.DEFAULT_PRECISION;
+        private TimeUnit precision = InfluxDBReactive.DEFAULT_PRECISION;
 
         /**
          * Set the number of QueryResults to process in one chunk.

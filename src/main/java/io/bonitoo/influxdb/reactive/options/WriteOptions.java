@@ -29,12 +29,10 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.annotation.concurrent.ThreadSafe;
 
+import io.bonitoo.influxdb.reactive.InfluxDBReactive;
+
 import org.influxdb.InfluxDB;
 import org.influxdb.impl.Preconditions;
-
-import static org.influxdb.InfluxDB.DEFAULT_CONSISTENCY_LEVEL;
-import static org.influxdb.InfluxDB.DEFAULT_PRECISION;
-import static org.influxdb.InfluxDB.DEFAULT_RETENTION_POLICY;
 
 /**
  * WriteOptions are used to configure writes to the InfluxDB.
@@ -137,9 +135,9 @@ public final class WriteOptions {
     public static class Builder {
 
         private String database;
-        private String retentionPolicy = DEFAULT_RETENTION_POLICY;
-        private InfluxDB.ConsistencyLevel consistencyLevel = DEFAULT_CONSISTENCY_LEVEL;
-        private TimeUnit precision = DEFAULT_PRECISION;
+        private String retentionPolicy = InfluxDBReactive.DEFAULT_RETENTION_POLICY;
+        private InfluxDB.ConsistencyLevel consistencyLevel = InfluxDBReactive.DEFAULT_CONSISTENCY_LEVEL;
+        private TimeUnit precision = InfluxDBReactive.DEFAULT_PRECISION;
         private boolean udpEnable = false;
         private int udpPort = -1;
 

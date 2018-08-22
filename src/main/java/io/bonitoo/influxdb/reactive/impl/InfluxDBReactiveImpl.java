@@ -523,7 +523,7 @@ public class InfluxDBReactiveImpl implements InfluxDBReactive {
                             .filter("X-Influxdb-Version"::equalsIgnoreCase)
                             .map(headers::get)
                             .findFirst()
-                            .orElse(Pong.UNKNOWN_VERSION);
+                            .orElse("unknown");
 
                     Pong pong = new Pong();
                     pong.setVersion(version);
