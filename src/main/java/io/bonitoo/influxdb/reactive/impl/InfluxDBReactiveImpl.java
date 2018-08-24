@@ -24,6 +24,7 @@ package io.bonitoo.influxdb.reactive.impl;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -141,7 +142,13 @@ public class InfluxDBReactiveImpl implements InfluxDBReactive {
                 retrofitBuilder,
                 options.getResponseFormat());
 
-        influxDBService = retrofitBuilder.build().create(InfluxDBServiceReactive.class);
+        try {
+            Field retrofit = delegate.getClass().getDeclaredField("retrofit");
+            retrofit.setAccessible(true);
+            influxDBService = ((Retrofit) retrofit.get(delegate)).create(InfluxDBServiceReactive.class);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
 
         switch (options.getResponseFormat()) {
             case MSGPACK:
