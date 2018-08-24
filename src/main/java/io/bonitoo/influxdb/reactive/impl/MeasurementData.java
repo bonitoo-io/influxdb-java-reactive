@@ -22,8 +22,11 @@
  */
 package io.bonitoo.influxdb.reactive.impl;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +38,6 @@ import org.influxdb.InfluxDBMapperException;
 import org.influxdb.annotation.Column;
 import org.influxdb.annotation.Measurement;
 import org.influxdb.dto.Point;
-import org.influxdb.impl.InfluxDBResultMapper;
 
 /**
  * @author Jakub Bednar (bednar@github) (18/06/2018 14:57)
@@ -71,7 +73,11 @@ final class MeasurementData<M> extends AbstractData<M> {
         return lineProtocol;
     }
 
-    private static class InfluxDBPointMapper extends InfluxDBResultMapper {
+    private static class InfluxDBPointMapper {
+
+        private static final ConcurrentMap<String, ConcurrentMap<String, Field>> CLASS_FIELD_CACHE
+                = new ConcurrentHashMap<>();
+
 
         private static final Logger LOG = Logger.getLogger(InfluxDBPointMapper.class.getName());
 
@@ -101,7 +107,7 @@ final class MeasurementData<M> extends AbstractData<M> {
             }
             Point.Builder builder = Point.measurement(getMeasurementName(measurementType));
 
-            getColNameAndFieldMap(measurementType).forEach((name, field) -> {
+            CLASS_FIELD_CACHE.get(measurementType.getName()).forEach((name, field) -> {
 
                 Column column = field.getAnnotation(Column.class);
 
@@ -118,7 +124,7 @@ final class MeasurementData<M> extends AbstractData<M> {
 
                 if (value == null) {
                     Object[] params = {field.getName(), measurement};
-                    LOG.log(Level.FINEST, "Field {0} of {1} has null value", params);
+                    LOG.log(Level.FINEST, "Fiel  d {0} of {1} has null value", params);
                     return;
                 }
 
@@ -144,11 +150,38 @@ final class MeasurementData<M> extends AbstractData<M> {
             return point;
         }
 
+        @Nonnull
+        private String getMeasurementName(@Nonnull final Class<?> measurementType) {
+            return measurementType.getAnnotation(Measurement.class).name();
+        }
+
         private boolean isNumber(@Nonnull final Class<?> fieldType) {
             return Number.class.isAssignableFrom(fieldType)
                     || double.class.isAssignableFrom(fieldType)
                     || long.class.isAssignableFrom(fieldType)
                     || int.class.isAssignableFrom(fieldType);
         }
+
+        void cacheMeasurementClass(@Nonnull  final Class<?>... measurementTypes) {
+            for (Class<?> measurementType : measurementTypes) {
+                if (CLASS_FIELD_CACHE.containsKey(measurementType.getName())) {
+                    continue;
+                }
+                ConcurrentMap<String, Field> initialMap = new ConcurrentHashMap<>();
+                ConcurrentMap<String, Field> influxColumnAndFieldMap = CLASS_FIELD_CACHE
+                        .putIfAbsent(measurementType.getName(), initialMap);
+                if (influxColumnAndFieldMap == null) {
+                    influxColumnAndFieldMap = initialMap;
+                }
+
+                for (Field field : measurementType.getDeclaredFields()) {
+                    Column colAnnotation = field.getAnnotation(Column.class);
+                    if (colAnnotation != null) {
+                        influxColumnAndFieldMap.put(colAnnotation.name(), field);
+                    }
+                }
+            }
+        }
+
     }
 }
