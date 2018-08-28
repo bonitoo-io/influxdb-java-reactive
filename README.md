@@ -12,7 +12,9 @@
 
 This is the Java Reactive Client library for the InfluxDB.
 
-The reactive client library is based on the RxJava. It's support all features from the [influxdb-java - core library](https://github.com/influxdata/influxdb-java/) in the reactive way.
+The reactive client library is based on the RxJava and as core part is used **[influxdb-java](https://github.com/influxdata/influxdb-java/)**. 
+
+It's support all features from the **influxdb-java** in the reactive way.
 
 ## Usage
 
