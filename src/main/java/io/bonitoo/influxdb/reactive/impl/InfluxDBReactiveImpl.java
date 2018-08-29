@@ -932,10 +932,12 @@ public class InfluxDBReactiveImpl implements InfluxDBReactive {
         if (throwable instanceof HttpException) {
 
             Response<?> response = ((HttpException) throwable).response();
-            String errorHeader = response.headers().get("X-Influx-Error");
+
             // build from error header
+            String errorHeader = response.headers().get("X-Influx-Error");
             if (errorHeader != null) {
-                return InfluxDBException.buildExceptionFromErrorMessage(errorHeader);
+                String errorBody = String.format("{\"error\":\"%s\"}", errorHeader);
+                return InfluxDBException.buildExceptionForErrorState(errorBody);
             }
             // build from error body
             try (ResponseBody errorBody = response.errorBody()) {
