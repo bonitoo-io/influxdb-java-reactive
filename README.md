@@ -14,7 +14,16 @@ This is the Java Reactive Client library for the InfluxDB.
 
 The reactive client library is based on the RxJava and as core part is used **[influxdb-java](https://github.com/influxdata/influxdb-java/)**. 
 
-It's support all features from the **influxdb-java** in the reactive way.
+## Key Features
+
+- [Serialization Java Objects to Data Points](#write-pojo)
+- [Event driven notifications](#events)
+- Partial writes
+- [Batching by RxJava framework](#batching-configuration)
+- [Client backpressure](#backpressure)
+- [Streaming query](#queries)
+
+It's support all features from the [influxdb-java](https://github.com/influxdata/influxdb-java/) in the reactive way.
 
 ## Usage
 
