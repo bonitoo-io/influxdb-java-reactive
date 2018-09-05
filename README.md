@@ -14,14 +14,15 @@ The reactive client library is based on the RxJava and as core part is used **[i
 
 ## Key Features
 
-- [Serialization Java Objects to Data Points](#write-pojo)
+`influxdb-java-reactive` library supports all features from the [influxdb-java](https://github.com/influxdata/influxdb-java/) in the reactive way 
+and adds following new features:
+
+- [Writing PoJo classes into InfluxDB](#write-pojo)
 - [Event driven notifications](#events)
 - Partial writes
 - [Batching by RxJava framework](#batching-configuration)
 - [Client backpressure](#backpressure)
 - [Streaming query](#queries)
-
-It's support all features from the [influxdb-java](https://github.com/influxdata/influxdb-java/) in the reactive way.
 
 ## Usage
 
@@ -91,9 +92,11 @@ influxDBReactive.listenEvents(WriteErrorEvent.class).subscribe(event -> {
 ### Writes
 
 The writes can be configured by `WriteOptions` and are processed in batches which are configurable by `BatchOptionsReactive`.
-It's use the same **Retry on error** strategy as non reactive client. 
-
-The `InfluxDBReactive` supports write data points to InfluxDB as POJO, `org.influxdb.dto.Point` or directly in [InfluxDB Line Protocol](https://docs.influxdata.com/influxdb/latest/write_protocols/line_protocol_tutorial/).
+It uses the same **Retry on error** strategy as non reactive client. 
+Retry is enabled only for writes with recoverable error `org.influxdb.InfluxDBException.isRetryWorth()`.
+ 
+The `InfluxDBReactive` supports write data points to InfluxDB as POJO, `org.influxdb.dto.Point` or directly in 
+[InfluxDB Line Protocol](https://docs.influxdata.com/influxdb/latest/write_protocols/line_protocol_tutorial/).
 
 #### Write configuration
 - `database` - the name of the database to write
@@ -169,7 +172,7 @@ influxDBReactive.close();
 ```
 #### Backpressure
 The backpressure presents the problem of what to do with a growing backlog of unconsumed data points. 
-The key feature of backpressure is provides capability to avoid consuming the unexpected amount of system resources.  
+The key feature of backpressure is to provide the capability to avoid consuming the unexpected amount of system resources.  
 This situation is not common and can be caused by several problems: generating too much measurements in short interval,
 long term unavailability of the InfluxDB server, network issues. 
 
