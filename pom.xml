@@ -315,7 +315,7 @@
 			<dependency>
 				<groupId>org.influxdb</groupId>
 				<artifactId>influxdb-java</artifactId>
-				<version>2.13.rpr-SNAPSHOT</version>
+				<version>2.13</version>
 			</dependency>
 
 			<dependency>
